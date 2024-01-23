@@ -1,0 +1,68 @@
+﻿@page "/create/categories"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3 class="card-title">Create New Categories</h3>
+<hr />
+<br />
+
+<EditForm Model="@category" OnValidSubmit="CreateCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Select Game: </label>
+        <div>
+            <InputSelect @bind-Value="category.GameId" class="form-control">
+                <option value="">-- Select Game --</option>
+                @if (Games != null)
+                {
+                    foreach (var game in Games)
+                    {
+                                <option value="@game.Id">@game.Name</option>
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => category.GameId)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputText @bind-Value="@category.Name" class="form-control" />
+            <ValidationMessage For="@(() => category.Name)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Category Description: </label>
+        <div>
+            <InputText @bind-Value="@category.Description" class="form-control" />
+            <ValidationMessage For="@(() => category.Description)" />
+        </div>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-success btn-block">
+        Create Category
+    </button>
+</EditForm>
+
+@code {
+    Category category = new Category();
+
+    private IList<Category>? Categories;
+    private IList<Game>? Games;
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+    }
+
+    private async Task CreateCategory()
+    {
+        await _client.PostAsJsonAsync(Endpoints.CategoriesEndpoint, category);
+        _navManager.NavigateTo("/create/");
+    }
+}

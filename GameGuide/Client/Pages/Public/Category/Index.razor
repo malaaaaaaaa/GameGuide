@@ -1,0 +1,55 @@
+﻿@page "/games/{id:int}"
+@inject HttpClient _client
+@inject IJSRuntime js
+
+@if (Games != null)
+{
+    <h3 class="card-title">Categories for @Games[id - 1].Name</h3>
+}
+
+
+
+@if (Categories == null)
+{
+    <div class="alert alert-info">Loading Categories...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Category Title</th>
+                <th>Description</th>
+                <th>Number of Posts</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Categories)
+            {
+                @if (@id == category.GameId)
+                {
+                    <tr>
+                        <a href="/games/@id/@category.Id" class="btn btn-outline-dark">
+                            <span></span>@category.Name
+                        </a>
+                        <td>@category.Description</td>
+                        <td>@category.Posts.Count</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Category>? Categories;
+    [Parameter] public int id { get; set; }
+
+    private IList<Game>? Games;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+    }
+}
