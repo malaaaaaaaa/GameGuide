@@ -9,8 +9,9 @@ namespace GameGuide.Shared.Domain
     public class Post : BaseDomainModel
     {
         public string? Title { get; set; }
+
+        public string? Description { get; set; }
         public string? Content { get; set; }
-        public string? imageUrl { get; set; }
         public int? CategoryId { get; set; }
         public virtual Category? Category { get; set; }
     }
