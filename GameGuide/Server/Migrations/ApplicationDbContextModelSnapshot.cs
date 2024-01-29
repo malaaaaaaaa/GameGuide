@@ -232,15 +232,15 @@ namespace GameGuide.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a5de1603-a265-4918-acdf-4d848723f8ac",
+                            ConcurrencyStamp = "3dd52de8-0e0b-4f1b-be85-0d5a848b6c8c",
                             Email = "david@admin.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DAVID@ADMIN.COM",
                             NormalizedUserName = "DAVID@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENJBXnukVMT4o6qk+Lyh7MJ9gk+usyY5rFG4LRTTjlW02CGLlu0a8IfmIy852/l8TA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBdVJEufGXn2saqIL/EIMJlFjx4xTX2e6nG3pp4tSagKM20KOkjVzWXhlztXisQLoA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c7fc40e7-8d61-46d2-b871-00ee0c5cfe5d",
+                            SecurityStamp = "b2c93cc9-0733-4140-b435-adc5599ff1c2",
                             TwoFactorEnabled = false,
                             UserName = "david@admin.com"
                         });
@@ -298,17 +298,39 @@ namespace GameGuide.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2024, 1, 23, 21, 15, 15, 115, DateTimeKind.Local).AddTicks(316),
+                            Created = new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6874),
                             Description = "Valorant is an online multiplayer computer game, produced by Riot Games. It is a first-person shooter game, consisting of two teams of five, where one team attacks and the other defends. Players control characters known as 'agents', who all have different abilities to use during gameplay.",
                             Name = "Valorant"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2024, 1, 23, 21, 15, 15, 115, DateTimeKind.Local).AddTicks(329),
+                            Created = new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6887),
                             Description = "Minecraft is a game where players place blocks and go on adventures. This includes anything from crafting simple items like containers or weapons, to building structures like houses, castles, and cities, or even making complex mechanical devices, all within the game's world.",
                             Name = "Minecraft"
                         });
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PostId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("GameGuide.Shared.Domain.Post", b =>

@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using GameGuide.Shared.Domain;
 using GameGuide.Server.IRepository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameGuide.Server.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -18,7 +20,9 @@ namespace GameGuide.Server.Controllers
         }
 
         // GET: api/Categories
+        [AllowAnonymous]
         [HttpGet]
+
         public async Task<IActionResult> GetCategories()
         {
             var categories = await _unitOfWork.Categories.GetAll(includes: q => q.Include(x => x.Game).Include(x => x.Posts));
@@ -26,6 +30,7 @@ namespace GameGuide.Server.Controllers
         }
 
         // GET: api/Categories/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategory(int id)
         {
@@ -41,6 +46,7 @@ namespace GameGuide.Server.Controllers
 
         // PUT: api/Categories/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, Category category)
         {
@@ -72,6 +78,7 @@ namespace GameGuide.Server.Controllers
 
         // POST: api/Categories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
@@ -82,6 +89,7 @@ namespace GameGuide.Server.Controllers
         }
 
         // DELETE: api/Categories/5
+        [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {

@@ -1,0 +1,56 @@
+﻿@page "/chat"
+@inject NavigationManager NavigationManager
+
+<h3>Chat</h3>
+
+@if(IsConnected)
+{
+    <input type="text" @bind="userInput" placeholder="Name" disabled="@IsReadOnly"/>
+    <input type="text" @bind="messageInput" placeholder="Message" />
+    <button @onclick="@(() => { Send(); Update(); })">Send</button>
+
+
+    <ul id="messagesList">
+        @foreach (var message in messages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+}
+else
+{
+    <span>Connecting...</span>
+}
+
+@code {
+    private HubConnection hubConnection;
+    private List<string> messages = new List<string>();
+    private string userInput;
+    private string messageInput;
+    private bool IsReadOnly = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+        .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
+        .Build();
+
+        hubConnection.On<string, string>("ReceivedMessage", (user, message) =>
+        {
+            var encodingMsg = $"{user}: {message}";
+            messages.Add(encodingMsg);
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    public void Update()
+    {
+        IsReadOnly = true;
+    }
+
+    Task Send() => hubConnection.SendAsync("SendMessage", userInput, messageInput);
+
+    public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
+}

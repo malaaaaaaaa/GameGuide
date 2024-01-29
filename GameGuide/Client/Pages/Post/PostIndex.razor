@@ -1,0 +1,87 @@
+﻿@page "/games/{gameid:int}/{catid:int}"
+@inject HttpClient _client
+@inject IJSRuntime js
+
+@if (Games != null)
+{
+    @foreach (var game in Games)
+    {
+        if(game.Id == gameid)
+        {
+            @foreach (var category in Categories)
+            {
+                if (category.Id == catid)
+                {
+                    <h3 class="card-title">@category.Name for @game.Name</h3>
+                }
+            }
+        }
+    }
+}
+
+
+
+@if (Posts == null)
+{
+    <div class="alert alert-info">Loading Posts...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Post Title</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var post in Posts)
+            {
+                @if (post.CategoryId == catid)
+                {
+                    <tr>
+                        <td>
+                        <a href="/posts/view/@post.Id" class="btn btn-outline-dark">
+                            <span></span>@post.Title
+                        </a>
+                        </td>
+                        <td>@post.Description</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public int catid { get; set; }
+    [Parameter] public int gameid { get; set; }
+
+    [Inject]
+    private IHttpAnonymousClientFactory httpAnonymousClientFactory { get; set; }
+
+    private IList<Post>? Posts;
+    private IList<Game>? Games;
+    private IList<Category>? Categories;
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+            Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+            Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        }
+        catch
+        {
+            Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+            Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+            Posts = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+        }
+    }
+
+
+
+
+}
+

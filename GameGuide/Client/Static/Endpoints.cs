@@ -1,4 +1,6 @@
-﻿namespace GameGuide.Client.Static
+﻿
+
+namespace GameGuide.Client.Static
 {
     public static class Endpoints
     {
@@ -9,5 +11,7 @@
         public static readonly string CategoriesEndpoint = $"{Prefix}/categories";
 
         public static readonly string PostsEndpoint = $"{Prefix}/posts";
+
+        public static readonly string ImagesEndpoint = $"{Prefix}/images";
     }
 }

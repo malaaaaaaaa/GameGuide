@@ -4,7 +4,13 @@
 
 @if (Games != null)
 {
-    <h3 class="card-title">Categories for @Games[id - 1].Name</h3>
+    @foreach (var game in Games)
+    {
+        @if (game.Id == id)
+        {
+            <h3 class="card-title">Categories for @game.Name</h3>
+        }
+    }
 }
 
 
@@ -42,14 +48,25 @@ else
 }
 
 @code {
-    private List<Category>? Categories;
     [Parameter] public int id { get; set; }
 
+    [Inject]
+    private IHttpAnonymousClientFactory httpAnonymousClientFactory { get; set; }
+
+    private List<Category>? Categories;
     private IList<Game>? Games;
 
     protected async override Task OnInitializedAsync()
     {
-        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
-        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        try
+        {
+            Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+            Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        }
+        catch
+        {
+            Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+            Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        }
     }
 }

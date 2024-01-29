@@ -11,9 +11,11 @@ using GameGuide.Server.IRepository;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using GameGuide.Server.IRepository;
 using GameGuide.Shared.Domain;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameGuide.Server.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class GamesController : ControllerBase
@@ -27,6 +29,7 @@ namespace GameGuide.Server.Controllers
         }
 
         // GET: api/Games
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetGames()
         {
@@ -35,6 +38,7 @@ namespace GameGuide.Server.Controllers
         }
 
         // GET: api/Games/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGame(int id)
         {
@@ -50,6 +54,7 @@ namespace GameGuide.Server.Controllers
 
         // PUT: api/Games/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGame(int id, Game game)
         {
@@ -81,6 +86,7 @@ namespace GameGuide.Server.Controllers
 
         // POST: api/Games
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [AllowAnonymous]
         [HttpPost]
         public async Task<ActionResult<Game>> PostGame(Game game)
         {
@@ -91,6 +97,7 @@ namespace GameGuide.Server.Controllers
         }
 
         // DELETE: api/Games/5
+        [AllowAnonymous]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame(int id)
         {

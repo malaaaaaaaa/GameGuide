@@ -1,0 +1,88 @@
+﻿@inject HttpClient _client
+
+<EditForm Model="@post" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Game Name: </label>
+        <div>
+            <InputSelect @bind-Value="gameid" class="form-control">
+                <option value="">-- Select Game --</option>
+                @if (Games != null)
+                {
+                    foreach (var game in Games)
+                    {
+                        <option value="@game.Id">@game.Name</option>
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => gameid)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputSelect @bind-Value="@post.CategoryId" class="form-control">
+                <option value="">-- Select Category --</option>
+                @if (Categories != null)
+                {
+                    foreach (var category in Categories)
+                    {
+                        if (category.GameId == gameid)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => post.CategoryId)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Post Title: </label>
+        <div>
+            <InputText @bind-Value="@post.Title" class="form-control" />
+            <ValidationMessage For="@(() => post.Title)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Post Description: </label>
+        <div>
+            <InputText @bind-Value="@post.Description" class="form-control" />
+            <ValidationMessage For="@(() => post.Description)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Post Content: </label>
+        <div>
+            <InputTextArea @bind-Value="@post.Content" class="form-control" style="height: 300px;" />
+            <ValidationMessage For="@(() => post.Content)" />
+        </div>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success btn-block">
+        @ButtonText
+    </button>
+    <BackToList Target="posts/view"/>
+</EditForm>
+
+@code {
+    [Parameter] public Post? post { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public int gameid { get; set; }
+
+    private IList<Category>? Categories;
+    private IList<Game>? Games;
+
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+    }
+}

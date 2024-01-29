@@ -1,0 +1,64 @@
+﻿@page "/images/view"
+@inject HttpClient _client
+@inject IJSRuntime js
+
+<h3 class="card-title">View All Images</h3>
+
+
+
+@if (Images == null)
+{
+    <div class="alert alert-info">Loading Images...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var image in Images)
+            {
+                <tr>
+                    <td><img src="@image.ImageName" class="rounded" style="width:960px;height:540px;" /></td>
+                    <td>
+                        <a href="/images/view/@image.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/images/edit/@image.Id" class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(() =>Delete(image.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private List<Image>? Images;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Images = await _client.GetFromJsonAsync<List<Image>>($"{Endpoints.ImagesEndpoint}");
+    }
+
+    async Task Delete(int imgId)
+    {
+        if (Images is not null)
+        {
+            var image = Images.First(q => q.Id == imgId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {image.Id}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.ImagesEndpoint}/{imgId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+}

@@ -1,0 +1,36 @@
+﻿@page "/create/images"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3 class="card-title">Add Images to Post</h3>
+<hr />
+<br />
+
+<FormComponent ButtonText="Add Image to Post" image="image" OnValidSubmit="@CreateImage"/>
+
+@code {
+    Image image = new Image();
+
+    [Parameter] public int catid { get; set; }
+    [Parameter] public int gameid { get; set; }
+
+    private IList<Category>? Categories;
+    private IList<Game>? Games;
+    private IList<Post>? Posts;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+        Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+    }
+
+
+    private async Task CreateImage()
+    {
+        
+        await _client.PostAsJsonAsync(Endpoints.ImagesEndpoint, image);
+        _navManager.NavigateTo("/create/");
+    }
+}

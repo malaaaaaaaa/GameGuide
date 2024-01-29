@@ -1,16 +1,9 @@
-﻿@page "/create/categories"
-@inject HttpClient _client
-@inject NavigationManager _navManager
-@attribute [Authorize]
+﻿@inject HttpClient _client
 
-<h3 class="card-title">Create New Categories</h3>
-<hr />
-<br />
-
-<EditForm Model="@category" OnValidSubmit="CreateCategory">
+<EditForm Model="@category" OnValidSubmit="@OnValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
+    <fieldset disabled = "@Disabled">
     <div class="form-group">
         <label>Select Game: </label>
         <div>
@@ -20,7 +13,7 @@
                 {
                     foreach (var game in Games)
                     {
-                                <option value="@game.Id">@game.Name</option>
+                        <option value="@game.Id">@game.Name</option>
                     }
                 }
             </InputSelect>
@@ -37,32 +30,32 @@
     <div class="form-group">
         <label>Category Description: </label>
         <div>
-            <InputText @bind-Value="@category.Description" class="form-control" />
+            <InputTextArea @bind-Value="@category.Description" class="form-control" style="height: 300px;" />
             <ValidationMessage For="@(() => category.Description)" />
         </div>
     </div>
+    </fieldset>
     <br />
-    <button type="submit" class="btn btn-success btn-block">
-        Create Category
-    </button>
+     @if (!Disabled)
+    {
+        <button type="submit" class="btn btn-success btn-block">
+            @ButtonText
+        </button>
+    }
+    <BackToList Target="categories/view"/>
 </EditForm>
 
 @code {
-    Category category = new Category();
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Category? category { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
 
-    private IList<Category>? Categories;
     private IList<Game>? Games;
 
 
     protected async override Task OnInitializedAsync()
     {
-        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
         Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
-    }
-
-    private async Task CreateCategory()
-    {
-        await _client.PostAsJsonAsync(Endpoints.CategoriesEndpoint, category);
-        _navManager.NavigateTo("/create/");
     }
 }

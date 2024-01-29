@@ -1,0 +1,28 @@
+﻿@page "/create/games"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3 class="card-title">Create New Games</h3>
+<hr />
+<br />
+
+<FormComponent ButtonText="Create Game" game="game" OnValidSubmit="@CreateGame" />
+
+@code {
+    Game game = new Game();
+
+    private IList<Game>? Games;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+
+    }
+
+    private async Task CreateGame()
+    {
+        await _client.PostAsJsonAsync(Endpoints.GamesEndpoint, game);
+        _navManager.NavigateTo("/create/");
+    }
+}

@@ -1,0 +1,93 @@
+﻿@page "/view"
+@attribute [Authorize]
+@inject HttpClient _client
+
+<h3 class="card-title">Admin Viewing Page</h3>
+
+<br />
+
+<table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <a href="/games/view" class="btn btn-outline-dark">
+                            <span></span>Games
+                    </a>
+                </td>
+                @if (Games is not null)
+                {
+                    <td>@Games.Count</td>
+                }
+                else
+                {
+                    <td>0</td>
+                }
+            </tr>
+            <tr>
+                <td>
+                    <a href="/categories/view" class="btn btn-outline-dark">
+                        <span></span>Categories
+                    </a>
+                </td>
+            @if (Categories is not null)
+            {
+                <td>@Categories.Count</td>
+            }
+            else
+            {
+                <td>0</td>
+            }
+            </tr>
+            <tr>
+                <td>
+                    <a href="/posts/view" class="btn btn-outline-dark">
+                        <span></span>Posts
+                    </a>
+                </td>
+            @if (Posts is not null)
+            {
+                <td>@Posts.Count</td>
+            }
+            else
+            {
+                <td>0</td>
+            }
+            </tr>
+            <tr>
+                <td>
+                    <a href="/images/view" class="btn btn-outline-dark">
+                        <span></span>Images
+                    </a>
+                </td>
+            @if (Images is not null)
+            {
+                <td>@Images.Count</td>
+            }
+            else
+            {
+                <td>0</td>
+            }
+            </tr>
+        </tbody>
+    </table>
+
+@code {
+    private IList<Post>? Posts;
+    private IList<Game>? Games;
+    private IList<Category>? Categories;
+    private IList<Image>? Images;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        Images = await _client.GetFromJsonAsync<List<Image>>($"{Endpoints.ImagesEndpoint}");
+    }
+}

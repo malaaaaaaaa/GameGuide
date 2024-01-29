@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GameGuide.Server.Data;
 using GameGuide.Shared.Domain;
 using GameGuide.Server.IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -15,51 +9,53 @@ namespace GameGuide.Server.Controllers
     [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
-    public class PostsController : ControllerBase
+    public class ImagesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _env;
 
-        public PostsController(IUnitOfWork unitOfWork)
+        public ImagesController(IUnitOfWork unitOfWork, IWebHostEnvironment env)
         {
             _unitOfWork = unitOfWork;
+            _env = env;
         }
 
-        // GET: api/Posts
+        // GET: api/Images
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetPosts()
+        public async Task<IActionResult> GetImages()
         {
-            var posts = await _unitOfWork.Posts.GetAll();
-            return Ok(posts);
+            var images = await _unitOfWork.Images.GetAll();
+            return Ok(images);
         }
 
-        // GET: api/Posts/5
+        // GET: api/Images/5
         [AllowAnonymous]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPost(int id)
+        public async Task<IActionResult> GetImage(int id)
         {
-            var post = await _unitOfWork.Posts.Get(q  => q.Id == id);
+            var image = await _unitOfWork.Images.Get(q => q.Id == id);
 
-            if (post == null)
+            if (image == null)
             {
                 return NotFound();
             }
 
-            return Ok(post);
+            return Ok(image);
         }
 
-        // PUT: api/Posts/5
+        // PUT: api/Images/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [AllowAnonymous]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPost(int id, Post post)
+        public async Task<IActionResult> PutImage(int id, Image image)
         {
-            if (id != post.Id)
+            if (id != image.Id)
             {
                 return BadRequest();
             }
 
-            _unitOfWork.Posts.Update(post);
+            _unitOfWork.Images.Update(image);
 
             try
             {
@@ -67,7 +63,7 @@ namespace GameGuide.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!await PostExists(id))
+                if (!await ImageExists(id))
                 {
                     return NotFound();
                 }
@@ -80,38 +76,43 @@ namespace GameGuide.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Posts
+        // POST: api/Images
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(Post post)
+        public async Task<ActionResult<Image>> PostImage(Image image)
         {
-            await _unitOfWork.Posts.Insert(post);
+            await _unitOfWork.Images.Insert(image);
             await _unitOfWork.Save(HttpContext);
 
-            return CreatedAtAction("GetPost", new { id = post.Id }, post);
+
+
+            return CreatedAtAction("GetImage", new { id = image.Id }, image);
         }
 
-        // DELETE: api/Posts/5
+        // DELETE: api/Images/5
         [AllowAnonymous]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePost(int id)
+        public async Task<IActionResult> DeleteImage(int id)
         {
-            var post = await _unitOfWork.Posts.Get(q => q.Id ==id);
-            if (post == null) 
-            { 
-                return NotFound(); 
+            var image = await _unitOfWork.Images.Get(q => q.Id ==id);
+            if (image == null)
+            {
+                return NotFound();
             }
-            await _unitOfWork.Posts.Delete(id);
+
+            await _unitOfWork.Images.Delete(id);
             await _unitOfWork.Save(HttpContext);
 
             return NoContent();
         }
 
-        private async Task<bool> PostExists(int id)
+
+        private async Task<bool> ImageExists(int id)
         {
-            var post = await _unitOfWork.Posts.Get(q => q.Id ==id);
-            return post != null;
+            var image = await _unitOfWork.Images.Get(q => q.Id ==id);
+            return image != null;
         }
+
     }
 }

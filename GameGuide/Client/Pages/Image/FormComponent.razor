@@ -1,0 +1,114 @@
+﻿@inject HttpClient _client
+
+<EditForm Model="@image" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+
+    <div class="form-group">
+        <label>Game Name: </label>
+        <div>
+            <InputSelect @bind-Value="gameid" class="form-control">
+                <option value="">-- Select Game --</option>
+                @if (Games != null)
+                {
+                    foreach (var game in Games)
+                    {
+                        <option value="@game.Id">@game.Name</option>
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => gameid)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputSelect @bind-Value="catid" class="form-control">
+                <option value="">-- Select Category --</option>
+                @if (Categories != null)
+                {
+                    foreach (var category in Categories)
+                    {
+                        if (category.GameId == gameid)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => catid)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Post Title: </label>
+        <div>
+            <InputSelect @bind-Value="image.PostId" class="form-control">
+                <option value="">-- Select Post --</option>
+                @if (Posts != null)
+                {
+                    foreach (var post in Posts)
+                    {
+                        if (post.CategoryId == catid)
+                        {
+                            <option value="@post.Id">@post.Title</option>
+                        }
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => catid)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Upload Image: </label>
+        <div>
+            <InputFile OnChange="UploadFile" class="form-control" />
+            <ValidationMessage For="@(() => image.ImageName)" />
+        </div>
+    </div>
+
+    <div>
+        <img src="@image.ImageName" class="rounded" style="width:960px;height:540px;" />
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-success btn-block">
+        Add Image to Post
+    </button>
+    <BackToList Target="images/view"/>
+</EditForm>
+
+@code {
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public Image? image { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public int catid { get; set; }
+    [Parameter] public int gameid { get; set; }
+
+    private IList<Category>? Categories;
+    private IList<Game>? Games;
+    private IList<Post>? Posts;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+        Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+    }
+
+    private async Task UploadFile(InputFileChangeEventArgs e)
+    {
+        var format = "image/png";
+        var resizedImage = await e.File.RequestImageFileAsync(format, 960, 540);
+        var buffer = new byte[resizedImage.Size];
+        await resizedImage.OpenReadStream().ReadAsync(buffer);
+        var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+
+
+        image.ImageName = imageData;
+    }
+}

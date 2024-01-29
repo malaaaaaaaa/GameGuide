@@ -9,5 +9,7 @@ namespace GameGuide.Server.IRepository
         IGenericRepository<Game> Games { get; }
         IGenericRepository<Post> Posts { get; }
 
+        IGenericRepository<Image> Images { get; }
+
     }
 }

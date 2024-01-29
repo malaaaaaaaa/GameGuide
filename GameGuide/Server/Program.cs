@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using GameGuide.Server.IRepository;
 using GameGuide.Server.Repository;
+using GameGuide.Server.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,8 @@ builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(op => op.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddRazorPages();
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -59,9 +62,11 @@ app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
 
+app.MapHub<ChatHub>("/chathub");
 
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
+
 
 app.Run();

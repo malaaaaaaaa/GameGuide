@@ -1,0 +1,70 @@
+﻿@page "/categories/view"
+@inject HttpClient _client
+@inject IJSRuntime js
+
+<h3 class="card-title">View All Categories</h3>
+
+
+@if (Categories == null)
+{
+    <div class="alert alert-info">Loading Categories...</div>
+}
+else
+{
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>Category Title</th>
+                <th>Game Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in Categories)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>@category.Game.Name</td>
+                    <td>
+                        <a href="/categories/view/@category.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/categories/edit/@category.Id" class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(() =>Delete(category.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private List<Category>? Categories;
+    private IList<Game>? Games;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+    }
+
+    async Task Delete(int catId)
+    {
+        if (Categories is not null)
+        {
+            var category = Categories.First(q => q.Id == catId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {category.Name}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.CategoriesEndpoint}/{catId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+}

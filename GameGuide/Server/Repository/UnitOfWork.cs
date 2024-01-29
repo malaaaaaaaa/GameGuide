@@ -14,6 +14,7 @@ namespace GameGuide.Server.Repository
         private IGenericRepository<Category> _categories;
         private IGenericRepository<Game> _games;
         private IGenericRepository<Post> _posts;
+        private IGenericRepository<Image> _images;
 
         private UserManager<ApplicationUser> _userManager;
 
@@ -29,6 +30,8 @@ namespace GameGuide.Server.Repository
             => _games ??= new GenericRepository<Game>(_context);
         public IGenericRepository<Post> Posts
             => _posts ??= new GenericRepository<Post>(_context);
+        public IGenericRepository<Image> Images
+            => _images ??= new GenericRepository<Image>(_context);
         public void Dispose()
         {
             _context.Dispose();
