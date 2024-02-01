@@ -17,6 +17,7 @@
 ## To Do List
 
 | Work to do | Description | Done By |
+|----| ----- | -------- |
 |Validation| Validation for individual entities in charge of | David & Irfan |
 |Custom Validation| Try to do custom validation for images and maybe improve the image upload to allow jpg and jpeg | David |
 |Chat Page| Try to find a way to allow the user to directly message a single person or "Private Messaging" | Irfan |
