@@ -232,15 +232,15 @@ namespace GameGuide.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3dd52de8-0e0b-4f1b-be85-0d5a848b6c8c",
+                            ConcurrencyStamp = "b6f85fb0-cc40-402b-9abc-b282bfdd4b81",
                             Email = "david@admin.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DAVID@ADMIN.COM",
                             NormalizedUserName = "DAVID@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBdVJEufGXn2saqIL/EIMJlFjx4xTX2e6nG3pp4tSagKM20KOkjVzWXhlztXisQLoA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGA6oJM0oBc8a70yt/pwMYtOhvYVqAh8vuwcbT+y6FTVRXxlayj9WeWGDkIQH5GTaA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b2c93cc9-0733-4140-b435-adc5599ff1c2",
+                            SecurityStamp = "a796ef88-84e3-48f5-b512-5f250b2124b6",
                             TwoFactorEnabled = false,
                             UserName = "david@admin.com"
                         });
@@ -298,14 +298,14 @@ namespace GameGuide.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6874),
+                            Created = new DateTime(2024, 2, 1, 13, 59, 28, 330, DateTimeKind.Local).AddTicks(9438),
                             Description = "Valorant is an online multiplayer computer game, produced by Riot Games. It is a first-person shooter game, consisting of two teams of five, where one team attacks and the other defends. Players control characters known as 'agents', who all have different abilities to use during gameplay.",
                             Name = "Valorant"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6887),
+                            Created = new DateTime(2024, 2, 1, 13, 59, 28, 330, DateTimeKind.Local).AddTicks(9452),
                             Description = "Minecraft is a game where players place blocks and go on adventures. This includes anything from crafting simple items like containers or weapons, to building structures like houses, castles, and cities, or even making complex mechanical devices, all within the game's world.",
                             Name = "Minecraft"
                         });
@@ -353,6 +353,9 @@ namespace GameGuide.Server.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SuggestionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
@@ -360,7 +363,87 @@ namespace GameGuide.Server.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("SuggestionId");
+
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.PostTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("PostTags");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.Suggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("CreatedPost")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("SendEmail")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suggestions");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -536,7 +619,32 @@ namespace GameGuide.Server.Migrations
                         .WithMany("Posts")
                         .HasForeignKey("CategoryId");
 
+                    b.HasOne("GameGuide.Shared.Domain.Suggestion", "Suggestion")
+                        .WithMany()
+                        .HasForeignKey("SuggestionId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Suggestion");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.PostTag", b =>
+                {
+                    b.HasOne("GameGuide.Shared.Domain.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameGuide.Shared.Domain.Tag", "Tag")
+                        .WithMany("PostTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -598,6 +706,11 @@ namespace GameGuide.Server.Migrations
             modelBuilder.Entity("GameGuide.Shared.Domain.Game", b =>
                 {
                     b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.Tag", b =>
+                {
+                    b.Navigation("PostTags");
                 });
 #pragma warning restore 612, 618
         }

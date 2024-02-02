@@ -1,6 +1,7 @@
 ﻿@page "/games"
 @inject HttpClient _client
 @inject IJSRuntime js
+@implements IDisposable
 
 <h3 class="card-title">Games</h3>
 
@@ -12,7 +13,7 @@
 }
 else
 {
-    <table class="table table-responsive">
+    <table class="table table-responsive" id="gamesTable">
         <thead>
             <tr>
                 <th>Name</th>
@@ -36,6 +37,8 @@ else
         </tbody>
     </table>
 }
+
+
 @code {
     private List<Game>? Games;
 
@@ -52,5 +55,15 @@ else
         {
             Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
         }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#gamesTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#gamesTable");
     }
 }

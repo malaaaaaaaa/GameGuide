@@ -1,0 +1,84 @@
+﻿@page "/tags/view"
+@inject HttpClient _client
+@inject IJSRuntime js
+@implements IDisposable
+
+<h3 class="card-title">Tags</h3>
+
+
+
+@if (Tags == null)
+{
+    <div class="alert alert-info">Loading Tags...</div>
+}
+else
+{
+    <table class="table table-responsive" id="tagsTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Number of Posts</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tag in Tags)
+            {
+                <tr>
+                    <td>
+                        <a href="/games/@tag.Id" class="btn btn-outline-dark">
+                            <span></span>@tag.Name
+                        </a>
+                    </td>
+                    <td>@tag.PostTags.Count</td>
+                    <td>
+                        <a href="/tags/view/@tag.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/tags/edit/@tag.Id" class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(() =>Delete(tag.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<a href="/view" class="btn btn-outline-dark">
+    <span></span>Back to Admin View Page
+</a>
+@code {
+    private List<Tag>? Tags;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+    }
+
+    async Task Delete(int tagId)
+    {
+        if (Tags is not null)
+        {
+            var tag = Tags.First(q => q.Id == tagId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {tag.Name}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.TagsEndpoint}/{tagId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#tagsTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#tagsTable");
+    }
+}

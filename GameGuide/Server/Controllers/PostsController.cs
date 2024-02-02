@@ -29,7 +29,7 @@ namespace GameGuide.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPosts()
         {
-            var posts = await _unitOfWork.Posts.GetAll();
+            var posts = await _unitOfWork.Posts.GetAll(includes: q => q.Include(x => x.Category));
             return Ok(posts);
         }
 

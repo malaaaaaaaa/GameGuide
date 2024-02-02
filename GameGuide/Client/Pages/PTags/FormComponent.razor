@@ -1,0 +1,67 @@
+﻿@inject HttpClient _client
+
+<EditForm Model="@postTag" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <fieldset disabled = "@Disabled">
+        <div class="form-group">
+            <label>Tag Name: </label>
+            <div>
+                <InputSelect @bind-Value="postTag.TagId" class="form-control">
+                    <option value="">-- Select Tag --</option>
+                    @if (Tags != null)
+                    {
+                        foreach (var tag in Tags)
+                        {
+                            <option value="@tag.Id">@tag.Name</option>
+                        }
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => postTag.TagId)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Post Title: </label>
+            <div>
+                <InputSelect @bind-Value="postTag.PostId" class="form-control">
+                    <option value="">-- Select Post --</option>
+                    @if (Posts != null)
+                    {
+                        foreach (var post in Posts)
+                        {
+                            <option value="@post.Id">@post.Title</option>
+                        }
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => postTag.PostId)" />
+            </div>
+        </div>
+    </fieldset>
+    <br />
+    @if (!Disabled)
+    {
+        <button type="submit" class="btn btn-success btn-block">
+            @ButtonText
+        </button>
+    }
+    <BackToList Target="@Target"/>
+</EditForm>
+
+@code {
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public PostTag? postTag { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public string Target { get; set; }
+
+    private IList<Tag>? Tags;
+    private IList<Post>? Posts;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+        Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+    }
+
+}

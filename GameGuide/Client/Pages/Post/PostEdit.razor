@@ -4,7 +4,7 @@
 
 <h3>Edit Post</h3>
 
-<FormComponent ButtonText="Update" OnValidSubmit="EditPost" post="post" />
+<FormComponent ButtonText="Update" OnValidSubmit="EditPost" post="post" Target="posts/view" />
 
 @code {
     [Parameter] public int id { get; set; }

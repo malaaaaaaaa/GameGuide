@@ -2,6 +2,7 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @attribute [Authorize]
+@implements IDisposable
 
 <h3 class="card-title">View All Images</h3>
 
@@ -13,7 +14,7 @@
 }
 else
 {
-    <table class="table table-responsive">
+    <table class="table table-responsive" id="imagesTable">
         <thead>
             <tr>
                 <th>Image</th>
@@ -24,7 +25,7 @@ else
             @foreach (var image in Images)
             {
                 <tr>
-                    <td><img src="@image.ImageName" class="rounded" style="width:960px;height:540px;" /></td>
+                    <td><img src="@image.ImageName" class="rounded" style="width:480px;height:270px;" /></td>
                     <td>
                         <a href="/images/view/@image.Id" class="btn btn-primary">
                             <span class="oi oi-book"></span>
@@ -41,6 +42,9 @@ else
         </tbody>
     </table>
 }
+<a href="/view" class="btn btn-outline-dark">
+    <span></span>Back to Admin View Page
+</a>
 @code {
     private List<Image>? Images;
 
@@ -61,5 +65,14 @@ else
                 await OnInitializedAsync();
             }
         }
+    }
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#imagesTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#imagesTable");
     }
 }

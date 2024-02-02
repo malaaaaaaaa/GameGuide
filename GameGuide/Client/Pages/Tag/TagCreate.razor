@@ -1,0 +1,20 @@
+﻿@page "/create/tags"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3 class="card-title">Create New Tags</h3>
+<hr />
+<br />
+
+<FormComponent ButtonText="Create Tag" tag="tag" OnValidSubmit="@CreateTag" Target="create" />
+
+@code {
+    Tag tag = new Tag();
+
+    private async Task CreateTag()
+    {
+        await _client.PostAsJsonAsync(Endpoints.TagsEndpoint, tag);
+        _navManager.NavigateTo("/create/");
+    }
+}

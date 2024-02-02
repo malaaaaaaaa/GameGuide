@@ -12,6 +12,8 @@ namespace GameGuide.Shared.Domain
 
         public string? Description { get; set; }
         public string? Content { get; set; }
+        public int? SuggestionId { get; set; }
+        public virtual Suggestion? Suggestion { get; set; }
         public int? CategoryId { get; set; }
         public virtual Category? Category { get; set; }
     }

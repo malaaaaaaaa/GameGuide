@@ -74,6 +74,51 @@
                 <td>0</td>
             }
             </tr>
+            <tr>
+                <td>
+                    <a href="/suggestions/view" class="btn btn-outline-dark">
+                        <span></span>Suggestions
+                    </a>
+                </td>
+                @if (Suggestions is not null)
+                {
+                    <td>@Suggestions.Count</td>
+                }
+                else
+                {
+                    <td>0</td>
+                }
+            </tr>
+            <tr>
+                <td>
+                    <a href="/tags/view" class="btn btn-outline-dark">
+                        <span></span>Tags
+                    </a>
+                </td>
+                @if (Tags is not null)
+                {
+                    <td>@Tags.Count</td>
+                }
+                else
+                {
+                    <td>0</td>
+                }
+            </tr>
+            <tr>
+                <td>
+                    <a href="/posttags/view" class="btn btn-outline-dark">
+                        <span></span>Post Tags
+                    </a>
+                </td>
+                @if (PostTags is not null)
+                {
+                    <td>@PostTags.Count</td>
+                }
+                else
+                {
+                    <td>0</td>
+                }
+            </tr>
         </tbody>
     </table>
 
@@ -82,6 +127,9 @@
     private IList<Game>? Games;
     private IList<Category>? Categories;
     private IList<Image>? Images;
+    private IList<Suggestion>? Suggestions;
+    private IList<Tag>? Tags;
+    private IList<PostTag>? PostTags;
 
     protected async override Task OnInitializedAsync()
     {
@@ -89,5 +137,8 @@
         Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
         Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
         Images = await _client.GetFromJsonAsync<List<Image>>($"{Endpoints.ImagesEndpoint}");
+        Suggestions = await _client.GetFromJsonAsync<List<Suggestion>>($"{Endpoints.SuggestionsEndpoint}");
+        Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+        PostTags = await _client.GetFromJsonAsync<List<PostTag>>($"{Endpoints.PostTagsEndpoint}");
     }
 }

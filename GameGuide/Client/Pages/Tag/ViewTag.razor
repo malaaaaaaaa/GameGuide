@@ -1,0 +1,17 @@
+﻿@page "/tags/view/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>View</h3>
+
+<FormComponent tag="tag" Disabled="true" Target="tags/view" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    Tag? tag = new Tag();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        tag = await _client.GetFromJsonAsync<Tag>($"{Endpoints.TagsEndpoint}/{id}");
+    }
+}

@@ -1,0 +1,86 @@
+﻿@page "/tags/{id:int}"
+@inject HttpClient _client
+@inject IJSRuntime js
+@implements IDisposable
+
+@if (Tags is not null)
+{
+    @foreach (var tag in Tags)
+    {
+        if (tag.Id == id)
+        {
+            <h3 class="card-title">Posts under @tag.Name</h3>
+        }
+    }
+
+}
+
+
+@if (Posts == null)
+{
+    <div class="alert alert-info">Loading Posts...</div>
+}
+else
+{
+    <table class="table table-responsive" id="posttagsTable">
+        <thead>
+            <tr>
+                <th>Post Title</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var posttag in PostTags)
+            {
+                @if (posttag.TagId == id)
+                {
+                    <tr>
+                        <td>
+                            <a href="/posts/view/@posttag.PostId" class="btn btn-outline-dark">
+                                <span></span>@posttag.Post.Title
+                            </a>
+                        </td>
+                        <td>@posttag.Post.Description</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    [Inject]
+    private IHttpAnonymousClientFactory httpAnonymousClientFactory { get; set; }
+
+    private IList<Post>? Posts;
+    private IList<Tag>? Tags;
+    private IList<PostTag>? PostTags;
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+            Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+            PostTags = await _client.GetFromJsonAsync<List<PostTag>>($"{Endpoints.PostTagsEndpoint}");
+        }
+        catch
+        {
+            Posts = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+            Tags = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+            PostTags = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<PostTag>>($"{Endpoints.PostTagsEndpoint}");
+        }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#posttagsTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#posttagsTable");
+    }
+
+}

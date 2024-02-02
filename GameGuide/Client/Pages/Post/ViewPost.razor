@@ -8,6 +8,12 @@
     {
         @if (post.Id == postid)
         {
+            @if(post.Category is not null)
+            {
+                <a href="/games/@post.Category.GameId/@post.CategoryId" class="btn btn-outline-dark">
+                    <span></span>Back to List
+                </a>
+            }
             <head>
                 <title>@post.Title</title>'
             </head>
@@ -31,7 +37,6 @@
         }
     }
 }
-
 @code {
     [Parameter] public int postid { get; set; }
 

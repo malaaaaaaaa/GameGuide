@@ -1,0 +1,86 @@
+﻿@page "/suggestions/view"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@implements IDisposable
+
+<h3 class="card-title">View All Suggestions</h3>
+
+@if (Suggestions == null)
+{
+    <div class="alert alert-info">Loading Posts...</div>
+}
+else
+{
+    <table class="table table-responsive" id="suggestionsTable">
+        <thead>
+            <tr>
+                <th>Suggestion Id</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var suggestion in Suggestions)
+            {
+                <tr>
+                    <td>@suggestion.Id</td>
+                    @if (((int)(DateTime.Now - suggestion.Created).TotalDays) < 1)
+                    {
+                        <td>Today</td>
+                    }
+                    else { 
+                        <td>@((int)(DateTime.Now - suggestion.Created).TotalDays) Days ago</td>
+                    }
+                   
+                    <td>
+                        <a href="/suggestions/view/@suggestion.Id" class="btn btn-primary">
+                            <span class="oi oi-book"></span>
+                        </a>
+                        <a href="/suggestions/edit/@suggestion.Id" class="btn btn-primary">
+                            <span class="oi oi-pencil"></span>
+                        </a>
+                        <button class="btn btn-danger" @onclick="@(() =>Delete(suggestion.Id))">
+                            <span class="oi oi-delete"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<a href="/view" class="btn btn-outline-dark">
+    <span></span>Back to Admin View Page
+</a>
+@code {
+    private IList<Suggestion>? Suggestions;
+
+    protected async override Task OnInitializedAsync()
+    {
+        Suggestions = await _client.GetFromJsonAsync<List<Suggestion>>($"{Endpoints.SuggestionsEndpoint}");
+    }
+
+    async Task Delete(int suggestionId)
+    {
+        if (Suggestions is not null)
+        {
+            var suggestion = Suggestions.First(q => q.Id == suggestionId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {suggestion.Id}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.SuggestionsEndpoint}/{suggestionId}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#suggestionsTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#suggestionsTable");
+    }
+}

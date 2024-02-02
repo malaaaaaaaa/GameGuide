@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameGuide.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240126165552_added Images and changed Posts")]
-    partial class addedImagesandchangedPosts
+    [Migration("20240131111524_Suggestions Added SendEmail bool")]
+    partial class SuggestionsAddedSendEmailbool
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,15 +235,15 @@ namespace GameGuide.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3dd52de8-0e0b-4f1b-be85-0d5a848b6c8c",
+                            ConcurrencyStamp = "6d6eff21-12dd-40eb-8828-39e241466c64",
                             Email = "david@admin.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DAVID@ADMIN.COM",
                             NormalizedUserName = "DAVID@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBdVJEufGXn2saqIL/EIMJlFjx4xTX2e6nG3pp4tSagKM20KOkjVzWXhlztXisQLoA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP8YuypQLmiRWaYlde9mCn0kkdv17859rtAFSModwh0z5esJybHu53Vy/LGzTVFE2A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b2c93cc9-0733-4140-b435-adc5599ff1c2",
+                            SecurityStamp = "f3467e1c-c907-4047-8029-5e1266c95f72",
                             TwoFactorEnabled = false,
                             UserName = "david@admin.com"
                         });
@@ -301,14 +301,14 @@ namespace GameGuide.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6874),
+                            Created = new DateTime(2024, 1, 31, 19, 15, 23, 977, DateTimeKind.Local).AddTicks(5751),
                             Description = "Valorant is an online multiplayer computer game, produced by Riot Games. It is a first-person shooter game, consisting of two teams of five, where one team attacks and the other defends. Players control characters known as 'agents', who all have different abilities to use during gameplay.",
                             Name = "Valorant"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6887),
+                            Created = new DateTime(2024, 1, 31, 19, 15, 23, 977, DateTimeKind.Local).AddTicks(5765),
                             Description = "Minecraft is a game where players place blocks and go on adventures. This includes anything from crafting simple items like containers or weapons, to building structures like houses, castles, and cities, or even making complex mechanical devices, all within the game's world.",
                             Name = "Minecraft"
                         });
@@ -356,6 +356,9 @@ namespace GameGuide.Server.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SuggestionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
@@ -363,7 +366,37 @@ namespace GameGuide.Server.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("SuggestionId");
+
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.Suggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("CreatedPost")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("SendEmail")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suggestions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -539,7 +572,13 @@ namespace GameGuide.Server.Migrations
                         .WithMany("Posts")
                         .HasForeignKey("CategoryId");
 
+                    b.HasOne("GameGuide.Shared.Domain.Suggestion", "Suggestion")
+                        .WithMany()
+                        .HasForeignKey("SuggestionId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Suggestion");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

@@ -1,0 +1,17 @@
+﻿@page "/suggestions/view/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>View</h3>
+
+<FormComponent suggestion="suggestion" Disabled="true" Target = "suggestions/view"/>
+
+@code {
+    [Parameter] public int id { get; set; }
+    Suggestion? suggestion = new Suggestion();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        suggestion = await _client.GetFromJsonAsync<Suggestion>($"{Endpoints.SuggestionsEndpoint}/{id}");
+    }
+}

@@ -1,0 +1,93 @@
+﻿@page "/posttags/view"
+@inject HttpClient _client
+@inject IJSRuntime js
+@attribute [Authorize]
+@implements IDisposable
+
+
+<h3 class="card-title">Post Tags</h3>
+
+
+@if (Posts == null)
+{
+    <div class="alert alert-info">Loading Posts...</div>
+}
+else
+{
+    <table class="table table-responsive" id="posttagsTable">
+        <thead>
+            <tr>
+                <th>Post Title</th>
+                <th>Tag</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var posttag in PostTags)
+            {
+                    <tr>
+                        <td>
+                            <a href="/posts/view/@posttag.PostId" class="btn btn-outline-dark">
+                                <span></span>@posttag.Post.Title
+                            </a>
+                        </td>
+                        <td>@posttag.Tag.Name</td>
+                        <td>
+                            <a href="/posttags/view/@posttag.Id" class="btn btn-primary">
+                                <span class="oi oi-book"></span>
+                            </a>
+                            <a href="/posttags/edit/@posttag.Id" class="btn btn-primary">
+                                <span class="oi oi-pencil"></span>
+                            </a>
+                            <button class="btn btn-danger" @onclick="@(() =>Delete(posttag.Id))">
+                                <span class="oi oi-delete"></span>
+                            </button>
+                        </td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+}
+<a href="/view" class="btn btn-outline-dark">
+    <span></span>Back to Admin View Page
+</a>
+@code {
+    [Parameter] public int id { get; set; }
+
+
+    private IList<Post>? Posts;
+    private IList<Tag>? Tags;
+    private IList<PostTag>? PostTags;
+
+
+    protected async override Task OnInitializedAsync()
+    {
+            Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+            Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+            PostTags = await _client.GetFromJsonAsync<List<PostTag>>($"{Endpoints.PostTagsEndpoint}");
+    }
+
+    async Task Delete(int posttagId)
+    {
+        if (PostTags is not null)
+        {
+            var posttag = PostTags.First(q => q.Id == posttagId);
+            var confirm = await js.InvokeAsync<bool>("confirm", $"Do you want to delete {posttag.Id}?");
+            if (confirm)
+            {
+                await _client.DeleteAsync($"{Endpoints.PostTagsEndpoint}/{posttag.Id}");
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#posttagsTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#posttagsTable");
+    }
+}

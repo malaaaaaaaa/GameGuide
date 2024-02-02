@@ -24,6 +24,9 @@ namespace GameGuide.Server.Data
         public DbSet<Post> Posts { get; set; }
 
         public DbSet<Image> Images { get; set; }
+        public DbSet<Suggestion> Suggestions { get; set; }
+        public DbSet<PostTag> PostTags { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

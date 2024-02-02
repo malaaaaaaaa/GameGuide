@@ -2,6 +2,7 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @attribute [Authorize]
+@implements IDisposable
 
 <h3 class="card-title">View All Games</h3>
 
@@ -13,7 +14,7 @@
 }
 else
 {
-    <table class="table table-responsive">
+    <table class="table table-responsive" id="gamesTable">
         <thead>
             <tr>
                 <th>Name</th>
@@ -41,6 +42,9 @@ else
         </tbody>
     </table>
 }
+<a href="/view" class="btn btn-outline-dark">
+    <span></span>Back to Admin View Page
+</a>
 @code {
     private List<Game>? Games;
 
@@ -61,5 +65,15 @@ else
                 await OnInitializedAsync();
             }
         }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#gamesTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#gamesTable");
     }
 }

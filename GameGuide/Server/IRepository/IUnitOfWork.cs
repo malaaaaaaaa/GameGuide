@@ -11,5 +11,10 @@ namespace GameGuide.Server.IRepository
 
         IGenericRepository<Image> Images { get; }
 
+        IGenericRepository<Suggestion> Suggestions { get; }
+
+        IGenericRepository<PostTag> PostTags { get; }
+        IGenericRepository<Tag> Tags { get; }
+
     }
 }

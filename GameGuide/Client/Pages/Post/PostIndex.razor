@@ -1,6 +1,7 @@
 ﻿@page "/games/{gameid:int}/{catid:int}"
 @inject HttpClient _client
 @inject IJSRuntime js
+@implements IDisposable
 
 @if (Games != null)
 {
@@ -27,7 +28,7 @@
 }
 else
 {
-    <table class="table table-responsive">
+    <table class="table table-responsive" id="postsTable">
         <thead>
             <tr>
                 <th>Post Title</th>
@@ -52,7 +53,9 @@ else
         </tbody>
     </table>
 }
-
+<a href="/games/@gameid" class="btn btn-outline-dark">
+    <span></span>Back to List
+</a>
 @code {
     [Parameter] public int catid { get; set; }
     [Parameter] public int gameid { get; set; }
@@ -80,7 +83,15 @@ else
         }
     }
 
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#postsTable");
+    }
 
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#postsTable");
+    }
 
 
 }

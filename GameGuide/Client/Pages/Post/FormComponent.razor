@@ -66,7 +66,7 @@
     <button type="submit" class="btn btn-success btn-block">
         @ButtonText
     </button>
-    <BackToList Target="posts/view"/>
+    <BackToList Target="@Target"/>
 </EditForm>
 
 @code {
@@ -74,6 +74,7 @@
     [Parameter] public string ButtonText { get; set; } = "Save";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
     [Parameter] public int gameid { get; set; }
+    [Parameter] public string Target { get; set; }
 
     private IList<Category>? Categories;
     private IList<Game>? Games;

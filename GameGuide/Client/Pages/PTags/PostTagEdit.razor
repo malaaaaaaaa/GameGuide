@@ -1,0 +1,23 @@
+﻿@page "/posttags/edit/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>Edit Post Tag</h3>
+
+<FormComponent ButtonText="Update" OnValidSubmit="EditPostTag" postTag="postTag" Target="posttags/view" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    PostTag? postTag = new PostTag();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        postTag = await _client.GetFromJsonAsync<PostTag>($"{Endpoints.PostTagsEndpoint}/{id}");
+    }
+
+    async Task EditPostTag()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.PostTagsEndpoint}/{id}", postTag);
+        _navManager.NavigateTo("/posts/view/");
+    }
+}

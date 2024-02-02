@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GameGuide.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class addedImagesandchangedPosts : Migration
+    public partial class AddedSuggestions : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -137,6 +137,22 @@ namespace GameGuide.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersistedGrants", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Suggestions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedPost = table.Column<bool>(type: "bit", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suggestions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -275,6 +291,7 @@ namespace GameGuide.Server.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SuggestionId = table.Column<int>(type: "int", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -285,6 +302,11 @@ namespace GameGuide.Server.Migrations
                         name: "FK_Posts_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Posts_Suggestions_SuggestionId",
+                        column: x => x.SuggestionId,
+                        principalTable: "Suggestions",
                         principalColumn: "Id");
                 });
 
@@ -300,15 +322,15 @@ namespace GameGuide.Server.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "3dd52de8-0e0b-4f1b-be85-0d5a848b6c8c", "david@admin.com", false, false, null, "DAVID@ADMIN.COM", "DAVID@ADMIN.COM", "AQAAAAIAAYagAAAAEBdVJEufGXn2saqIL/EIMJlFjx4xTX2e6nG3pp4tSagKM20KOkjVzWXhlztXisQLoA==", null, false, "b2c93cc9-0733-4140-b435-adc5599ff1c2", false, "david@admin.com" });
+                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "4cf0fb28-d133-40c8-a918-320911f1a7f4", "david@admin.com", false, false, null, "DAVID@ADMIN.COM", "DAVID@ADMIN.COM", "AQAAAAIAAYagAAAAEO6XlJ56/E7jiHUvqnPAXVZp84U2ZWnFmh0zv/w03pRDG4MIoAOT3WImEzkXYZCDPw==", null, false, "cbd48d07-33b7-4118-86a7-f961ff1cd034", false, "david@admin.com" });
 
             migrationBuilder.InsertData(
                 table: "Games",
                 columns: new[] { "Id", "Created", "Description", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6874), "Valorant is an online multiplayer computer game, produced by Riot Games. It is a first-person shooter game, consisting of two teams of five, where one team attacks and the other defends. Players control characters known as 'agents', who all have different abilities to use during gameplay.", "Valorant" },
-                    { 2, new DateTime(2024, 1, 27, 0, 55, 52, 721, DateTimeKind.Local).AddTicks(6887), "Minecraft is a game where players place blocks and go on adventures. This includes anything from crafting simple items like containers or weapons, to building structures like houses, castles, and cities, or even making complex mechanical devices, all within the game's world.", "Minecraft" }
+                    { 1, new DateTime(2024, 1, 31, 18, 21, 51, 723, DateTimeKind.Local).AddTicks(8834), "Valorant is an online multiplayer computer game, produced by Riot Games. It is a first-person shooter game, consisting of two teams of five, where one team attacks and the other defends. Players control characters known as 'agents', who all have different abilities to use during gameplay.", "Valorant" },
+                    { 2, new DateTime(2024, 1, 31, 18, 21, 51, 723, DateTimeKind.Local).AddTicks(8848), "Minecraft is a game where players place blocks and go on adventures. This includes anything from crafting simple items like containers or weapons, to building structures like houses, castles, and cities, or even making complex mechanical devices, all within the game's world.", "Minecraft" }
                 });
 
             migrationBuilder.InsertData(
@@ -400,6 +422,11 @@ namespace GameGuide.Server.Migrations
                 name: "IX_Posts_CategoryId",
                 table: "Posts",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_SuggestionId",
+                table: "Posts",
+                column: "SuggestionId");
         }
 
         /// <inheritdoc />
@@ -443,6 +470,9 @@ namespace GameGuide.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Suggestions");
 
             migrationBuilder.DropTable(
                 name: "Games");

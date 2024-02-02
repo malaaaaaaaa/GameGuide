@@ -1,6 +1,7 @@
 ﻿@page "/games/{id:int}"
 @inject HttpClient _client
 @inject IJSRuntime js
+@implements IDisposable
 
 @if (Games != null)
 {
@@ -21,7 +22,7 @@
 }
 else
 {
-    <table class="table table-responsive">
+    <table class="table table-responsive" id="categoriesTable">
         <thead>
             <tr>
                 <th>Category Title</th>
@@ -35,9 +36,11 @@ else
                 @if (@id == category.GameId)
                 {
                     <tr>
-                        <a href="/games/@id/@category.Id" class="btn btn-outline-dark">
-                            <span></span>@category.Name
-                        </a>
+                        <td>
+                            <a href="/games/@id/@category.Id" class="btn btn-outline-dark">
+                                <span></span>@category.Name
+                            </a>
+                        </td>
                         <td>@category.Description</td>
                         <td>@category.Posts.Count</td>
                     </tr>
@@ -46,7 +49,9 @@ else
         </tbody>
     </table>
 }
-
+<a href="/games" class="btn btn-outline-dark">
+    <span></span>Back to List
+</a>
 @code {
     [Parameter] public int id { get; set; }
 
@@ -68,5 +73,15 @@ else
             Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
             Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
         }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#categoriesTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#categoriesTable");
     }
 }

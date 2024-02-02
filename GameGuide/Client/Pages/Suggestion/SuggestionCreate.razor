@@ -1,0 +1,30 @@
+﻿@page "/create/suggestions"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [AllowAnonymous]
+
+<h3 class="card-title">Have a suggestion for a Post?</h3>
+<hr />
+<br />
+
+<FormComponent ButtonText="Submit Suggestion" suggestion="suggestion" OnValidSubmit="@CreateSuggestion" needBack=false/>
+
+@code {
+    Suggestion suggestion = new Suggestion();
+
+    [Inject]
+    private IHttpAnonymousClientFactory httpAnonymousClientFactory { get; set; }
+
+    private async Task CreateSuggestion()
+    {
+        try
+        {
+            await _client.PostAsJsonAsync(Endpoints.SuggestionsEndpoint, suggestion);
+        }
+        catch
+        {
+            await httpAnonymousClientFactory.HttpClient.PostAsJsonAsync(Endpoints.SuggestionsEndpoint, suggestion);
+        }
+        _navManager.NavigateTo("/");
+    }
+}

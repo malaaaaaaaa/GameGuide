@@ -78,7 +78,7 @@
     <button type="submit" class="btn btn-success btn-block">
         Add Image to Post
     </button>
-    <BackToList Target="images/view"/>
+    <BackToList Target="@Target"/>
 </EditForm>
 
 @code {
@@ -86,6 +86,7 @@
     [Parameter] public Image? image { get; set; }
     [Parameter] public string ButtonText { get; set; } = "Save";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public string Target { get; set; }
     [Parameter] public int catid { get; set; }
     [Parameter] public int gameid { get; set; }
 

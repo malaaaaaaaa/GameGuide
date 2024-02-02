@@ -1,0 +1,66 @@
+﻿@page "/tags"
+@inject HttpClient _client
+@inject IJSRuntime js
+@implements IDisposable
+
+<h3 class="card-title">Tags</h3>
+
+
+
+@if (Tags == null)
+{
+    <div class="alert alert-info">Loading Tags...</div>
+}
+else
+{
+    <table class="table table-responsive" id="tagsTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Number of Posts</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tag in Tags)
+            {
+                <tr>
+                    <td>
+                        <a href="/tags/@tag.Id" class="btn btn-outline-dark">
+                            <span></span>@tag.Name
+                        </a>
+                    </td>
+                    <td>@tag.Description</td>
+                    <td>@tag.PostTags.Count</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private List<Tag>? Tags;
+
+    [Inject]
+    private IHttpAnonymousClientFactory httpAnonymousClientFactory { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+        }
+        catch
+        {
+            Tags = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
+        }
+    }
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#tagsTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#tagsTable");
+    }
+}

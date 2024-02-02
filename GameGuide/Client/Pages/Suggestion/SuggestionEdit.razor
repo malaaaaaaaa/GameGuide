@@ -1,0 +1,23 @@
+﻿@page "/suggestions/edit/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>Edit Suggestion</h3>
+
+<FormComponent ButtonText="Update" OnValidSubmit="EditSuggestion" suggestion="suggestion" Target="suggestions/view" />
+
+@code {
+    [Parameter] public int id { get; set; }
+    Suggestion? suggestion = new Suggestion();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        suggestion = await _client.GetFromJsonAsync<Suggestion>($"{Endpoints.SuggestionsEndpoint}/{id}");
+    }
+
+    async Task EditSuggestion()
+    {
+        await _client.PutAsJsonAsync($"{Endpoints.SuggestionsEndpoint}/{id}", suggestion);
+        _navManager.NavigateTo("/suggestions/view/");
+    }
+}

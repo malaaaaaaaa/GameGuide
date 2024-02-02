@@ -2,6 +2,7 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @attribute [Authorize]
+@implements IDisposable
 
 <h3 class="card-title">View All Categories</h3>
 
@@ -12,7 +13,7 @@
 }
 else
 {
-    <table class="table table-responsive">
+    <table class="table table-responsive" id="categoriesTable">
         <thead>
             <tr>
                 <th>Category Title</th>
@@ -42,7 +43,9 @@ else
         </tbody>
     </table>
 }
-
+<a href="/view" class="btn btn-outline-dark">
+    <span></span>Back to Admin View Page
+</a>
 @code {
     [Parameter] public int id { get; set; }
 
@@ -67,5 +70,15 @@ else
                 await OnInitializedAsync();
             }
         }
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("AddDataTable", "#categoriesTable");
+    }
+
+    public void Dispose()
+    {
+        js.InvokeVoidAsync("DataTablesDispose", "#categoriesTable");
     }
 }

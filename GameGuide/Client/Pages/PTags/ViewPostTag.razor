@@ -1,0 +1,19 @@
+﻿@page "/posttags/view/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+
+<h3>View</h3>
+
+
+<FormComponent postTag="postTag" Disabled="true" Target="posttags/view" />
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    PostTag? postTag = new PostTag();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        postTag = await _client.GetFromJsonAsync<PostTag>($"{Endpoints.PostTagsEndpoint}/{id}");
+    }
+}

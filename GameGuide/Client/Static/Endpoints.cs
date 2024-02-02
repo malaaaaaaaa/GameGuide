@@ -13,5 +13,11 @@ namespace GameGuide.Client.Static
         public static readonly string PostsEndpoint = $"{Prefix}/posts";
 
         public static readonly string ImagesEndpoint = $"{Prefix}/images";
+
+        public static readonly string SuggestionsEndpoint = $"{Prefix}/suggestions";
+
+        public static readonly string TagsEndpoint = $"{Prefix}/tags";
+
+        public static readonly string PostTagsEndpoint = $"{Prefix}/posttags";
     }
 }

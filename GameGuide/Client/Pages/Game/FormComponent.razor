@@ -25,7 +25,7 @@
             @ButtonText
         </button>
     }
-    <BackToList Target="games/view"/>
+    <BackToList Target="@Target"/>
 </EditForm>
 
 @code {
@@ -33,4 +33,6 @@
     [Parameter] public Game? game { get; set; }
     [Parameter] public string ButtonText { get; set; } = "Save";
     [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public string Target { get; set; }
+
 }

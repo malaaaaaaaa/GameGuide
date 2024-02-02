@@ -1,0 +1,20 @@
+﻿@page "/create/posttags"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+
+<h3 class="card-title">Add Tag to Post</h3>
+<hr />
+<br />
+
+<FormComponent ButtonText="Add Tag to Post" postTag="postTag" OnValidSubmit="@CreatePostTag" Target="create" />
+
+@code {
+    PostTag postTag = new PostTag();
+
+    private async Task CreatePostTag()
+    {
+        await _client.PostAsJsonAsync(Endpoints.PostTagsEndpoint, postTag);
+        _navManager.NavigateTo("/create/");
+    }
+}
