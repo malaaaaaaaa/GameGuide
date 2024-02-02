@@ -4,8 +4,6 @@
 
 <h3>Chat</h3>
 
-
-
 @if(IsConnected)
 {
     @if (@authStateProvider.GetAuthenticationStateAsync().Result.User.Identity.Name is not null)
