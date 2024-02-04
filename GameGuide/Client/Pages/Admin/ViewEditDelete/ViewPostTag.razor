@@ -3,6 +3,7 @@
 @inject IJSRuntime js
 @attribute [Authorize]
 @implements IDisposable
+@inject HttpInterceptorService _interceptor
 
 
 <h3 class="card-title">Post Tags</h3>
@@ -62,6 +63,7 @@ else
 
     protected async override Task OnInitializedAsync()
     {
+            _interceptor.MonitorEvent();
             Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
             Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
             PostTags = await _client.GetFromJsonAsync<List<PostTag>>($"{Endpoints.PostTagsEndpoint}");
@@ -88,6 +90,7 @@ else
 
     public void Dispose()
     {
+        _interceptor.DisposeEvent();
         js.InvokeVoidAsync("DataTablesDispose", "#posttagsTable");
     }
 }

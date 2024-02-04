@@ -1,0 +1,124 @@
+﻿@page "/create/posts/{id:int}"
+@inject HttpClient _client
+@inject NavigationManager _navManager
+@attribute [Authorize]
+@using System.Net.Mail
+
+<h3 class="card-title">Create New Post</h3>
+<hr />
+<br />
+
+@inject HttpClient _client
+
+<EditForm Model="@post" OnValidSubmit="@CreatePost">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Game Name: </label>
+        <div>
+            <InputSelect @bind-Value="gameid" class="form-control">
+                <option value="">-- Select Game --</option>
+                @if (Games != null)
+                {
+                    foreach (var game in Games)
+                    {
+                        <option value="@game.Id">@game.Name</option>
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => gameid)" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Category Name: </label>
+        <div>
+            <InputSelect @bind-Value="@post.CategoryId" class="form-control">
+                <option value="">-- Select Category --</option>
+                @if (Categories != null)
+                {
+                    foreach (var category in Categories)
+                    {
+                        if (category.GameId == gameid)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    }
+                }
+            </InputSelect>
+            <ValidationMessage For="@(() => post.CategoryId)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Post Title: </label>
+        <div>
+            <InputText @bind-Value="@post.Title" class="form-control" />
+            <ValidationMessage For="@(() => post.Title)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Post Description: </label>
+        <div>
+            <InputText @bind-Value="@post.Description" class="form-control" />
+            <ValidationMessage For="@(() => post.Description)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Post Content: </label>
+        <div>
+            <InputTextArea @bind-Value="@post.Content" class="form-control" style="height: 300px;" />
+            <ValidationMessage For="@(() => post.Content)" />
+        </div>
+    </div>
+    <fieldset disabled ="@true">
+        @if (suggestion is not null)
+        {
+            <div class="form-group">
+                <label>Suggestion Id: </label>
+                <div>
+                    <InputNumber @bind-Value="@suggestion.Id" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Email: </label>
+            <div>
+                <InputText @bind-Value="@suggestion.Email" class="form-control" />
+            </div>
+        </div>
+        }
+    </fieldset>
+
+    <br />
+    <button type="submit" class="btn btn-success btn-block">
+        Create Post from Suggestion
+    </button>
+    <BackToList Target="suggestions/view" />
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Suggestion? suggestion;
+    private IList<Category>? Categories;
+    private IList<Game>? Games;
+
+    [Parameter] public int gameid { get; set; }
+
+    Post post = new Post();
+
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+        Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+        suggestion = await _client.GetFromJsonAsync<Suggestion>($"{Endpoints.SuggestionsEndpoint}/{id}");
+    }
+
+    private async Task CreatePost()
+    {
+        await _client.PostAsJsonAsync(Endpoints.PostsEndpoint, post);
+        await _client.DeleteAsync($"{Endpoints.SuggestionsEndpoint}/{id}");
+        _navManager.NavigateTo("suggestions/view");
+    }
+}

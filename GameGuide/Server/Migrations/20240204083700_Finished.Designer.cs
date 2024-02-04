@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameGuide.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240131111524_Suggestions Added SendEmail bool")]
-    partial class SuggestionsAddedSendEmailbool
+    [Migration("20240204083700_Finished")]
+    partial class Finished
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,15 +235,15 @@ namespace GameGuide.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6d6eff21-12dd-40eb-8828-39e241466c64",
+                            ConcurrencyStamp = "a5b8ae69-136d-46cb-aef1-055a3c09cf3d",
                             Email = "david@admin.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DAVID@ADMIN.COM",
                             NormalizedUserName = "DAVID@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP8YuypQLmiRWaYlde9mCn0kkdv17859rtAFSModwh0z5esJybHu53Vy/LGzTVFE2A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDAYeC+hd/e9gKzFUqgTNwr+PnfLctf8RCsJYcMFSItamy636xabbHMvaIsyYw5TTA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f3467e1c-c907-4047-8029-5e1266c95f72",
+                            SecurityStamp = "6999a0a0-a393-43f8-adc1-0bfa3e81157c",
                             TwoFactorEnabled = false,
                             UserName = "david@admin.com"
                         });
@@ -261,13 +261,18 @@ namespace GameGuide.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int?>("GameId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -288,10 +293,14 @@ namespace GameGuide.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -301,14 +310,14 @@ namespace GameGuide.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2024, 1, 31, 19, 15, 23, 977, DateTimeKind.Local).AddTicks(5751),
+                            Created = new DateTime(2024, 2, 4, 16, 37, 0, 622, DateTimeKind.Local).AddTicks(774),
                             Description = "Valorant is an online multiplayer computer game, produced by Riot Games. It is a first-person shooter game, consisting of two teams of five, where one team attacks and the other defends. Players control characters known as 'agents', who all have different abilities to use during gameplay.",
                             Name = "Valorant"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2024, 1, 31, 19, 15, 23, 977, DateTimeKind.Local).AddTicks(5765),
+                            Created = new DateTime(2024, 2, 4, 16, 37, 0, 622, DateTimeKind.Local).AddTicks(792),
                             Description = "Minecraft is a game where players place blocks and go on adventures. This includes anything from crafting simple items like containers or weapons, to building structures like houses, castles, and cities, or even making complex mechanical devices, all within the game's world.",
                             Name = "Minecraft"
                         });
@@ -326,9 +335,11 @@ namespace GameGuide.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PostId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -345,22 +356,29 @@ namespace GameGuide.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CategoryId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int?>("SuggestionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -369,6 +387,32 @@ namespace GameGuide.Server.Migrations
                     b.HasIndex("SuggestionId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.PostTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("PostTags");
                 });
 
             modelBuilder.Entity("GameGuide.Shared.Domain.Suggestion", b =>
@@ -380,7 +424,9 @@ namespace GameGuide.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -397,6 +443,32 @@ namespace GameGuide.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Suggestions");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -561,7 +633,9 @@ namespace GameGuide.Server.Migrations
                 {
                     b.HasOne("GameGuide.Shared.Domain.Game", "Game")
                         .WithMany("Categories")
-                        .HasForeignKey("GameId");
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Game");
                 });
@@ -570,7 +644,9 @@ namespace GameGuide.Server.Migrations
                 {
                     b.HasOne("GameGuide.Shared.Domain.Category", "Category")
                         .WithMany("Posts")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GameGuide.Shared.Domain.Suggestion", "Suggestion")
                         .WithMany()
@@ -579,6 +655,25 @@ namespace GameGuide.Server.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Suggestion");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.PostTag", b =>
+                {
+                    b.HasOne("GameGuide.Shared.Domain.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameGuide.Shared.Domain.Tag", "Tag")
+                        .WithMany("PostTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -640,6 +735,11 @@ namespace GameGuide.Server.Migrations
             modelBuilder.Entity("GameGuide.Shared.Domain.Game", b =>
                 {
                     b.Navigation("Categories");
+                });
+
+            modelBuilder.Entity("GameGuide.Shared.Domain.Tag", b =>
+                {
+                    b.Navigation("PostTags");
                 });
 #pragma warning restore 612, 618
         }

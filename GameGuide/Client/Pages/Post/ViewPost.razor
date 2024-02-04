@@ -1,31 +1,20 @@
 ﻿@page "/posts/view/{postid:int}"
 @inject HttpClient _client
 @inject NavigationManager _navManager
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
 
-@if (Posts is not null)
+@if (post is not null)
 {
-    @foreach (var post in Posts)
-    {
-        @if (post.Id == postid)
-        {
-            @if(post.Category is not null)
-            {
-                <a href="/games/@post.Category.GameId/@post.CategoryId" class="btn btn-outline-dark">
-                    <span></span>Back to List
-                </a>
-            }
-            <head>
-                <title>@post.Title</title>'
-            </head>
-            <body>
-                <h1>@post.Title</h1>
-                <h2>@post.Description</h2>
-                <p>@post.Content</p>
-            </body>
-        }
-
-    }
-
+    <a href="/games/@post.Category?.GameId/@post.CategoryId
+    " class="btn btn-outline-dark">
+        <span></span>Back to List
+    </a>
+    <body>
+        <h1>@post.Title</h1>
+        <h2>@post.Description</h2>
+        <p>@post.Content</p>
+    </body>
 }
 @if (Images is not null)
 {
@@ -33,7 +22,7 @@
     {
         @if (image.PostId == @postid)
         {
-            <img src="@image.ImageName" class="rounded" style="width:960px;height:540px;" />
+            <img src="@image.ImageName" class="rounded" style="width:960px;height:540px;" onclick="window.open('@image.ImageName', '_blank');" />
         }
     }
 }
@@ -47,22 +36,31 @@
     private IList<Game>? Games;
     private IList<Category>? Categories;
     private IList<Image>? Images;
+    private Post? post;
 
     protected async override Task OnInitializedAsync()
     {
         try
         {
+            _interceptor.MonitorEvent();
             Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
             Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
             Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
             Images = await _client.GetFromJsonAsync<List<Image>>($"{Endpoints.ImagesEndpoint}");
+            post = await _client.GetFromJsonAsync<Post>($"{Endpoints.PostsEndpoint}/{postid}");
         }
         catch
         {
+            _interceptor.MonitorEvent();
             Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
             Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
             Posts = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
             Images = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Image>>($"{Endpoints.ImagesEndpoint}");
+            post = await _client.GetFromJsonAsync<Post>($"{Endpoints.PostsEndpoint}/{postid}");
         }
+    }
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }

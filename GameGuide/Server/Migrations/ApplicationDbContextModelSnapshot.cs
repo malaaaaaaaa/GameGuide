@@ -232,15 +232,15 @@ namespace GameGuide.Server.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b6f85fb0-cc40-402b-9abc-b282bfdd4b81",
+                            ConcurrencyStamp = "a5b8ae69-136d-46cb-aef1-055a3c09cf3d",
                             Email = "david@admin.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "DAVID@ADMIN.COM",
                             NormalizedUserName = "DAVID@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGA6oJM0oBc8a70yt/pwMYtOhvYVqAh8vuwcbT+y6FTVRXxlayj9WeWGDkIQH5GTaA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDAYeC+hd/e9gKzFUqgTNwr+PnfLctf8RCsJYcMFSItamy636xabbHMvaIsyYw5TTA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a796ef88-84e3-48f5-b512-5f250b2124b6",
+                            SecurityStamp = "6999a0a0-a393-43f8-adc1-0bfa3e81157c",
                             TwoFactorEnabled = false,
                             UserName = "david@admin.com"
                         });
@@ -258,13 +258,18 @@ namespace GameGuide.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int?>("GameId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -285,10 +290,14 @@ namespace GameGuide.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -298,14 +307,14 @@ namespace GameGuide.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2024, 2, 1, 13, 59, 28, 330, DateTimeKind.Local).AddTicks(9438),
+                            Created = new DateTime(2024, 2, 4, 16, 37, 0, 622, DateTimeKind.Local).AddTicks(774),
                             Description = "Valorant is an online multiplayer computer game, produced by Riot Games. It is a first-person shooter game, consisting of two teams of five, where one team attacks and the other defends. Players control characters known as 'agents', who all have different abilities to use during gameplay.",
                             Name = "Valorant"
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2024, 2, 1, 13, 59, 28, 330, DateTimeKind.Local).AddTicks(9452),
+                            Created = new DateTime(2024, 2, 4, 16, 37, 0, 622, DateTimeKind.Local).AddTicks(792),
                             Description = "Minecraft is a game where players place blocks and go on adventures. This includes anything from crafting simple items like containers or weapons, to building structures like houses, castles, and cities, or even making complex mechanical devices, all within the game's world.",
                             Name = "Minecraft"
                         });
@@ -323,9 +332,11 @@ namespace GameGuide.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("PostId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -342,22 +353,29 @@ namespace GameGuide.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("CategoryId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int?>("SuggestionId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -403,7 +421,9 @@ namespace GameGuide.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -435,11 +455,13 @@ namespace GameGuide.Server.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -608,7 +630,9 @@ namespace GameGuide.Server.Migrations
                 {
                     b.HasOne("GameGuide.Shared.Domain.Game", "Game")
                         .WithMany("Categories")
-                        .HasForeignKey("GameId");
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Game");
                 });
@@ -617,7 +641,9 @@ namespace GameGuide.Server.Migrations
                 {
                     b.HasOne("GameGuide.Shared.Domain.Category", "Category")
                         .WithMany("Posts")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GameGuide.Shared.Domain.Suggestion", "Suggestion")
                         .WithMany()

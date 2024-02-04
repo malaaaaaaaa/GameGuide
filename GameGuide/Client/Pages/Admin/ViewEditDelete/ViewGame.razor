@@ -3,6 +3,8 @@
 @inject IJSRuntime js
 @attribute [Authorize]
 @implements IDisposable
+@inject HttpInterceptorService _interceptor
+
 
 <h3 class="card-title">View All Games</h3>
 
@@ -50,6 +52,7 @@ else
 
     protected async override Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent();
         Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
     }
 
@@ -74,6 +77,7 @@ else
 
     public void Dispose()
     {
+        _interceptor.DisposeEvent();
         js.InvokeVoidAsync("DataTablesDispose", "#gamesTable");
     }
 }

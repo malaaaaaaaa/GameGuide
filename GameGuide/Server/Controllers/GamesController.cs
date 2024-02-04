@@ -33,6 +33,7 @@ namespace GameGuide.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetGames()
         {
+
             var games = await _unitOfWork.Games.GetAll(includes: q => q.Include(x => x.Categories));
             return Ok(games);
         }

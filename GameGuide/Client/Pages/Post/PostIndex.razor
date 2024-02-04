@@ -2,23 +2,10 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @implements IDisposable
+@inject HttpInterceptorService _interceptor
 
-@if (Games != null)
-{
-    @foreach (var game in Games)
-    {
-        if(game.Id == gameid)
-        {
-            @foreach (var category in Categories)
-            {
-                if (category.Id == catid)
-                {
-                    <h3 class="card-title">@category.Name for @game.Name</h3>
-                }
-            }
-        }
-    }
-}
+
+<h3 class="card-title">@category?.Name for @game?.Name</h3>
 
 
 
@@ -60,6 +47,9 @@ else
     [Parameter] public int catid { get; set; }
     [Parameter] public int gameid { get; set; }
 
+    private Category? category;
+    private Game? game;
+
     [Inject]
     private IHttpAnonymousClientFactory httpAnonymousClientFactory { get; set; }
 
@@ -71,15 +61,21 @@ else
     {
         try
         {
+            _interceptor.MonitorEvent();
             Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
             Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
             Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
+            game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{gameid}");
+            category = await _client.GetFromJsonAsync<Category>($"{Endpoints.CategoriesEndpoint}/{catid}");
         }
         catch
         {
+            _interceptor.MonitorEvent();
             Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
             Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
             Posts = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
+            game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{gameid}");
+            category = await _client.GetFromJsonAsync<Category>($"{Endpoints.CategoriesEndpoint}/{catid}");
         }
     }
 
@@ -90,6 +86,7 @@ else
 
     public void Dispose()
     {
+        _interceptor.DisposeEvent();
         js.InvokeVoidAsync("DataTablesDispose", "#postsTable");
     }
 

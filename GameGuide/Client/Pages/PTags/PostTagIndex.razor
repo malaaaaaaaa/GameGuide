@@ -2,6 +2,8 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @implements IDisposable
+@inject HttpInterceptorService _interceptor
+
 
 @if (Tags is not null)
 {
@@ -59,6 +61,7 @@ else
     private IList<PostTag>? PostTags;
     protected async override Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent();
         try
         {
             Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
@@ -80,6 +83,7 @@ else
 
     public void Dispose()
     {
+        _interceptor.DisposeEvent();
         js.InvokeVoidAsync("DataTablesDispose", "#posttagsTable");
     }
 

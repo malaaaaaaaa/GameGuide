@@ -3,6 +3,8 @@
 @inject IJSRuntime js
 @attribute [Authorize]
 @implements IDisposable
+@inject HttpInterceptorService _interceptor
+
 
 <h3 class="card-title">View All Suggestions</h3>
 
@@ -32,8 +34,10 @@ else
                     else { 
                         <td>@((int)(DateTime.Now - suggestion.Created).TotalDays) Days ago</td>
                     }
-                   
                     <td>
+                        <a href="/create/posts/@suggestion.Id" class="btn btn-primary">
+                            <span class="oi oi-plus"></span>
+                        </a>
                         <a href="/suggestions/view/@suggestion.Id" class="btn btn-primary">
                             <span class="oi oi-book"></span>
                         </a>
@@ -57,6 +61,7 @@ else
 
     protected async override Task OnInitializedAsync()
     {
+        _interceptor.MonitorEvent();
         Suggestions = await _client.GetFromJsonAsync<List<Suggestion>>($"{Endpoints.SuggestionsEndpoint}");
     }
 
@@ -81,6 +86,7 @@ else
 
     public void Dispose()
     {
+        _interceptor.DisposeEvent();
         js.InvokeVoidAsync("DataTablesDispose", "#suggestionsTable");
     }
 }

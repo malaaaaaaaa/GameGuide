@@ -2,17 +2,11 @@
 @inject HttpClient _client
 @inject IJSRuntime js
 @implements IDisposable
+@inject HttpInterceptorService _interceptor
 
-@if (Games != null)
-{
-    @foreach (var game in Games)
-    {
-        @if (game.Id == id)
-        {
-            <h3 class="card-title">Categories for @game.Name</h3>
-        }
-    }
-}
+
+<h3 class="card-title">Categories for @game?.Name</h3>
+
 
 
 
@@ -49,6 +43,7 @@ else
         </tbody>
     </table>
 }
+
 <a href="/games" class="btn btn-outline-dark">
     <span></span>Back to List
 </a>
@@ -60,17 +55,22 @@ else
 
     private List<Category>? Categories;
     private IList<Game>? Games;
+    private Game? game;
 
     protected async override Task OnInitializedAsync()
     {
         try
         {
+            _interceptor.MonitorEvent();
             Games = await _client.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+            game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{id}");
             Categories = await _client.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
         }
         catch
         {
+            _interceptor.MonitorEvent();
             Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
+            game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{id}");
             Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
         }
     }
@@ -82,6 +82,7 @@ else
 
     public void Dispose()
     {
+        _interceptor.DisposeEvent();
         js.InvokeVoidAsync("DataTablesDispose", "#categoriesTable");
     }
 }
