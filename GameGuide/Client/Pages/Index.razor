@@ -1,10 +1,47 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<PageTitle>GameGuide</PageTitle>
 
-<h1>Hello, world!</h1>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/css/Index.css" />
+</head>
+<body>
+    <div id="header">
+        <h1>David & Irfan's Game Guide</h1>
+        <a href="/create/suggestions" class="btn btn-outline-light">
+            <span></span>Have any suggestions?
+        </a>
+    </div>
 
-Welcome to your new app.
+    <div id="popularLink">
+        <h4>Explore our site!</h4>
+    </div>
+
+    <div id="featureSection">
+        <div class="featureBox">
+            <a href="/games" class="btn btn-outline-light">
+                <h4>Games</h4>
+            </a>
+            <p>Games that you love!</p>
+        </div>
+
+        <div class="featureBox">
+            <a href="/tags" class="btn btn-outline-light">
+                <h4>Tags</h4>
+            </a>
+            <p>Filter through so you can find the post you need!</p>
+        </div>
+
+        <div class="featureBox">
+            <a href="/chat" class="btn btn-outline-light">
+                <h4>Chat</h4>
+            </a>
+            <p>Talk with other users and make friends!</p>
+        </div>
+    </div>
+</body>
 
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+
