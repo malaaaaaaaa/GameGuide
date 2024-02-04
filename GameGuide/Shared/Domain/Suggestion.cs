@@ -13,6 +13,7 @@ namespace GameGuide.Shared.Domain
         [StringLength(300, MinimumLength = 5, ErrorMessage = "Title does not meet length requirements")]
         public string? Content { get; set; }
         public bool SendEmail { get; set; }
+        [DataType(DataType.EmailAddress, ErrorMessage = "Email Address is not a valid email")]
         public string? Email { get; set; }
         public bool? CreatedPost { get; set; }
     }
