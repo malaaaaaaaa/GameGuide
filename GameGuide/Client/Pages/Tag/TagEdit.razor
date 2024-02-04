@@ -1,7 +1,8 @@
 ﻿@page "/tags/edit/{id:int}"
 @inject HttpClient _client
 @inject NavigationManager _navManager
-
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
 <h3>Edit Tag</h3>
 
 <FormComponent ButtonText="Update" OnValidSubmit="EditTag" tag="tag" Target="tags/view" />
@@ -12,6 +13,7 @@
 
     protected async override Task OnParametersSetAsync()
     {
+        _interceptor.MonitorEvent();
         tag = await _client.GetFromJsonAsync<Tag>($"{Endpoints.TagsEndpoint}/{id}");
     }
 
@@ -19,5 +21,10 @@
     {
         await _client.PutAsJsonAsync($"{Endpoints.TagsEndpoint}/{id}", tag);
         _navManager.NavigateTo("/tags/view/");
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }

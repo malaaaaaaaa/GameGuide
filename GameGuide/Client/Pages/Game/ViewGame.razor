@@ -1,6 +1,8 @@
 ﻿@page "/games/view/{id:int}"
 @inject HttpClient _client
 @inject NavigationManager _navManager
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
 
 <h3>View</h3>
 
@@ -12,6 +14,12 @@
 
     protected async override Task OnParametersSetAsync()
     {
+        _interceptor.MonitorEvent();
         game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{id}");
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }

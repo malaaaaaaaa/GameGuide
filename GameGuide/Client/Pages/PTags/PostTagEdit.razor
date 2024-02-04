@@ -1,7 +1,8 @@
 ﻿@page "/posttags/edit/{id:int}"
 @inject HttpClient _client
 @inject NavigationManager _navManager
-
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
 <h3>Edit Post Tag</h3>
 
 <FormComponent ButtonText="Update" OnValidSubmit="EditPostTag" postTag="postTag" Target="posttags/view" />
@@ -12,6 +13,7 @@
 
     protected async override Task OnParametersSetAsync()
     {
+        _interceptor.MonitorEvent();
         postTag = await _client.GetFromJsonAsync<PostTag>($"{Endpoints.PostTagsEndpoint}/{id}");
     }
 
@@ -19,5 +21,10 @@
     {
         await _client.PutAsJsonAsync($"{Endpoints.PostTagsEndpoint}/{id}", postTag);
         _navManager.NavigateTo("/posts/view/");
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }

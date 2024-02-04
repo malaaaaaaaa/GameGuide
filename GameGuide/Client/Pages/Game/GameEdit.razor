@@ -1,7 +1,8 @@
 ﻿@page "/games/edit/{id:int}"
 @inject HttpClient _client
 @inject NavigationManager _navManager
-
+@implements IDisposable
+@inject HttpInterceptorService _interceptor
 <h3>Edit Game</h3>
 
 <FormComponent ButtonText="Update" OnValidSubmit="EditGame" game="game" Target="games/view" />
@@ -12,6 +13,7 @@
 
     protected async override Task OnParametersSetAsync()
     {
+        _interceptor.MonitorEvent();
         game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{id}");
     }
 
@@ -19,5 +21,10 @@
     {
         await _client.PutAsJsonAsync($"{Endpoints.GamesEndpoint}/{id}", game);
         _navManager.NavigateTo("/games/view/");
+    }
+
+    public void Dispose()
+    {
+        _interceptor.DisposeEvent();
     }
 }
