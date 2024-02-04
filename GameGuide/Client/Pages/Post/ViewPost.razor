@@ -56,7 +56,7 @@
             Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
             Posts = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
             Images = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Image>>($"{Endpoints.ImagesEndpoint}");
-            post = await _client.GetFromJsonAsync<Post>($"{Endpoints.PostsEndpoint}/{postid}");
+            post = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<Post>($"{Endpoints.PostsEndpoint}/{postid}");
         }
     }
     public void Dispose()

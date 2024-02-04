@@ -59,6 +59,7 @@ else
     private IList<Post>? Posts;
     private IList<Tag>? Tags;
     private IList<PostTag>? PostTags;
+    private Tag? tag;
     protected async override Task OnInitializedAsync()
     {
         _interceptor.MonitorEvent();
@@ -67,12 +68,14 @@ else
             Posts = await _client.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
             Tags = await _client.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
             PostTags = await _client.GetFromJsonAsync<List<PostTag>>($"{Endpoints.PostTagsEndpoint}");
+            tag = await _client.GetFromJsonAsync<Tag>($"{Endpoints.TagsEndpoint}/{id}");
         }
         catch
         {
             Posts = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
             Tags = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Tag>>($"{Endpoints.TagsEndpoint}");
             PostTags = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<PostTag>>($"{Endpoints.PostTagsEndpoint}");
+            tag = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<Tag>($"{Endpoints.TagsEndpoint}/{id}");
         }
     }
 

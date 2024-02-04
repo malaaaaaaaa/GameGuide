@@ -1,5 +1,6 @@
 ﻿@page "/games/{id:int}"
 @inject HttpClient _client
+@inject NavigationManager _navManager
 @inject IJSRuntime js
 @implements IDisposable
 @inject HttpInterceptorService _interceptor
@@ -70,7 +71,7 @@ else
         {
             _interceptor.MonitorEvent();
             Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
-            game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{id}");
+            game = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{id}");
             Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
         }
     }
