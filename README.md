@@ -12,7 +12,7 @@
 |Suggestions| CRUD for Suggestions | Irfan |
 |Chat Page| A Chat that allows user to talk to anyone else in real time | Irfan |
 |Image Storing| Store images uploaded by admins into the project either by downloading the uploaded image or as a data string | David |
-|Allow Anonymous to access Game,Category,Post Index| Allow non-logged in users , the public, to view the index pages and see the posts made. | david |
+|Allow Anonymous to access Game,Category,Post Index| Allow non-logged in users , the public, to view the index pages and see the posts made. | David |
 |Validation| Validation for individual entities in charge of | David & Irfan |
 
 ## To Do List
