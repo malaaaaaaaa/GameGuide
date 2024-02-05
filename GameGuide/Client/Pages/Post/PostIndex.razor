@@ -74,8 +74,8 @@ else
             Games = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Game>>($"{Endpoints.GamesEndpoint}");
             Categories = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Category>>($"{Endpoints.CategoriesEndpoint}");
             Posts = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<List<Post>>($"{Endpoints.PostsEndpoint}");
-            game = await _client.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{gameid}");
-            category = await _client.GetFromJsonAsync<Category>($"{Endpoints.CategoriesEndpoint}/{catid}");
+            game = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<Game>($"{Endpoints.GamesEndpoint}/{gameid}");
+            category = await httpAnonymousClientFactory.HttpClient.GetFromJsonAsync<Category>($"{Endpoints.CategoriesEndpoint}/{catid}");
         }
     }
 
